@@ -108,23 +108,23 @@ def test(epoch, logger, test_fixed=None):
     print("epoch {}, testing  r2: {:.6f}, test mnlp: {}".format(
         epoch, r2_test, mnlp_test))
 
+if __name__ == '__main__':
+  print('Start training.........................................................')
+  tic = time()
+  for epoch in range(1, args.epochs + 1):
+      svgd.train(epoch, logger)
+      with torch.no_grad():
+          test(epoch, logger)
+  training_time = time() - tic
+  print('Finished training:\n{} epochs\n{} data\n{} samples (SVGD)\n{} seconds'
+      .format(args.epochs, args.ntrain, args.n_samples, training_time))
 
-print('Start training.........................................................')
-tic = time()
-for epoch in range(1, args.epochs + 1):
-    svgd.train(epoch, logger)
-    with torch.no_grad():
-        test(epoch, logger)
-training_time = time() - tic
-print('Finished training:\n{} epochs\n{} data\n{} samples (SVGD)\n{} seconds'
-    .format(args.epochs, args.ntrain, args.n_samples, training_time))
+  # save training results
+  x_axis = np.arange(args.log_freq, args.epochs + args.log_freq, args.log_freq)
+  # plot the rmse, r2-score curve and save them in txt
+  save_stats(args.train_dir, logger, x_axis)
 
-# save training results
-x_axis = np.arange(args.log_freq, args.epochs + args.log_freq, args.log_freq)
-# plot the rmse, r2-score curve and save them in txt
-save_stats(args.train_dir, logger, x_axis)
-
-args.training_time = training_time
-args.n_params, args.n_layers = dense_ed._num_parameters_convlayers()
-with open(args.run_dir + "/args.txt", 'w') as args_file:
-    json.dump(vars(args), args_file, indent=4)
+  args.training_time = training_time
+  args.n_params, args.n_layers = dense_ed._num_parameters_convlayers()
+  with open(args.run_dir + "/args.txt", 'w') as args_file:
+      json.dump(vars(args), args_file, indent=4)
