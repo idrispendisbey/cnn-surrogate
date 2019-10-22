@@ -102,7 +102,7 @@ def vector_to_parameters(vec, parameters, grad=True):
         grad (bool): True for assigning de-vectorized `vec` to gradients
     """
     # Ensure vec of type Variable
-    if not isinstance(vec, torch.cuda.FloatTensor):
+    if (not isinstance(vec, torch.cuda.FloatTensor)) and (isinstance(vec, torch.FloatTensor)):
         raise TypeError('expected torch.Tensor, but got: {}'
                         .format(torch.typename(vec)))
     # Flag for the device where the parameter is located
